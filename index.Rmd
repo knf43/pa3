@@ -1,0 +1,57 @@
+---
+title: "index.Rmd"
+author: "Kaylee Fernandez"
+date: "2/21/2021"
+output: html_document
+---
+#Load/tidy data
+```{r, load_packages}
+library(languageR)
+library(tidyverse)
+library(knitr)
+``` 
+
+
+```{r, descriptive_stats}
+etymology_descriptive <- etymology %>%
+  group_by(Valency) %>%
+  summarise(MeanWrittenFrequency = mean(WrittenFrequency), SDWrittenFrequency = sd(WrittenFrequency))
+
+```
+
+
+```{r, tidy_data}
+etymology <- etymology %>%
+  filter(Valency < 15)
+
+kable(etymology_descriptive[1:3], caption = "**Table 1** Mean and standard deviation of standardized written frequencies in CELEX corpus for Dutch verbs by valence.")
+```
+
+#Figure 1 Correlation Coefficients
+
+```{r, plot_bivariate_regression}
+correlation <- lm(Valency ~ WrittenFrequency, data = etymology)
+summary(correlation) 
+
+cor(etymology$Valency, etymology$WrittenFrequency)
+cor.test(etymology$Valency, etymology$WrittenFrequency)
+
+
+```
+
+
+```{r, plot_correlation}
+etymology %>%
+  ggplot(aes(x = Valency, y = WrittenFrequency, color = Regularity)) +
+  geom_point(position = position_jitter(2), size = 1.5 ) + 
+  geom_smooth(method = lm) + labs(x = "Valency", y = "Log-transformed written frequency (CELEX Corpus)", title = "Figure 2: Scatter Plot of Frequency of Dutch Verbs by Verbal Valency") + theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+
+# General observations
+
+In linguistic usage, valency involves the number of arguments (complements) a verb can take. The more arguments a verb can take, the higher its valency. A bivariate regression was conducted to investigate the relationship of valency in predicting log-transformed written frequency. A total of 272 Dutch verbs from the CELEX corpus were included in the analysis. Originally there were 285 verbs, however, 13 items were excluded from the analysis as they were not representative of the typical range found within 99% of Dutch verbs. 
+
+The descriptive statistics can be found in Figure 1, and the correlation coefficients can be found in Figure 2. There was statistically significant correlation between the log-transformed written frequency for each verb in the CELEX corpus and valency, r(272) = .57, p < .001. The results of the bivariate regression revealed that the independent variable, valency, statistically significantly predicted the dependent variable, log-transformed written frequency, F(1, 270) = 132.1, p < .001. Figure 3 provides a scatterplot displaying the relationship between log-transformed written frequency and valency. The scatterplot revealed that the correlation was greatest between verbs that were morphologically irregular.
