@@ -374,7 +374,7 @@ display: none;
 library(&quot;ggplot2&quot;)
 
 data(package = &quot;untidydata&quot;) 
-data(spanish_vowels, package = &quot;untidydata&quot;) </code></pre>
+data(spanish_vowels, package = &quot;untidydata&quot;) #loading spanish vowels dataset </code></pre>
 </div>
 <div id="explore" class="section level1">
 <h1>explore</h1>
@@ -404,9 +404,9 @@ data(spanish_vowels, package = &quot;untidydata&quot;) </code></pre>
 <h1>tidying the data</h1>
 <pre class="r"><code>tidy_spanish_vowels &lt;- spanish_vowels |&gt;
   separate(
-    col = label,
-    into = c(&quot;ID&quot;, &quot;gender&quot;, &quot;vowel&quot;),
-    sep = &quot;-&quot; 
+    col = label, #old column
+    into = c(&quot;ID&quot;, &quot;gender&quot;, &quot;vowel&quot;), # new columns
+    sep = &quot;-&quot; #separating factor
   )
 
 print(tidy_spanish_vowels)</code></pre>
@@ -428,7 +428,7 @@ print(tidy_spanish_vowels)</code></pre>
 <div id="descriptive-statistics" class="section level1">
 <h1>descriptive statistics</h1>
 <pre class="r"><code>tidy_spanish_vowels |&gt;
-  group_by(gender, vowel) |&gt; #grouping by participant type and item
+  group_by(gender, vowel) |&gt; #grouping by gender and vowel
   summarize(
     avg_f1 = mean(f1),
     avg_f2 = mean(f2),
@@ -455,7 +455,7 @@ print(tidy_spanish_vowels)</code></pre>
 </div>
 <div id="linear-model" class="section level1">
 <h1>linear model</h1>
-<pre class="r"><code>model_spanish_vowels &lt;- lm(formula = f1 ~ f2 : vowel, data = tidy_spanish_vowels)
+<pre class="r"><code>model_spanish_vowels &lt;- lm(formula = f1 ~ f2 : vowel, data = tidy_spanish_vowels) # linear interaction of F2 and vowel on F1
 summary(model_spanish_vowels)</code></pre>
 <pre><code>## 
 ## Call:
@@ -484,7 +484,7 @@ summary(model_spanish_vowels)</code></pre>
 <h1>plot including regression line</h1>
 <pre class="r"><code>tidy_spanish_vowels |&gt;
   ggplot() + 
-  aes(x =f2, y = f1, color = vowel) + # mapping the x and y axis
+  aes(x =f2, y = f1, color = vowel) + # mapping the x and y axis , each vowel unique color
   geom_point() + # adding the geometric object
   geom_smooth(method = &quot;lm&quot;) + # adding the regression line
   labs(title = &quot;F1 as a Function of F2 by vowel&quot;)</code></pre>

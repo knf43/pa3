@@ -13,7 +13,7 @@ library("untidydata")
 library("ggplot2")
 
 data(package = "untidydata") 
-data(spanish_vowels, package = "untidydata") 
+data(spanish_vowels, package = "untidydata") #loading spanish vowels dataset 
 ```
 
 # explore
@@ -30,9 +30,9 @@ glimpse(spanish_vowels)
 ```{r}
 tidy_spanish_vowels <- spanish_vowels |>
   separate(
-    col = label,
-    into = c("ID", "gender", "vowel"),
-    sep = "-" 
+    col = label, #old column
+    into = c("ID", "gender", "vowel"), # new columns
+    sep = "-" #separating factor
   )
 
 print(tidy_spanish_vowels)
@@ -43,7 +43,7 @@ print(tidy_spanish_vowels)
 ```{r}
 
 tidy_spanish_vowels |>
-  group_by(gender, vowel) |> #grouping by participant type and item
+  group_by(gender, vowel) |> #grouping by gender and vowel
   summarize(
     avg_f1 = mean(f1),
     avg_f2 = mean(f2),
@@ -56,7 +56,7 @@ tidy_spanish_vowels |>
 # linear model
 
 ```{r}
-model_spanish_vowels <- lm(formula = f1 ~ f2 : vowel, data = tidy_spanish_vowels)
+model_spanish_vowels <- lm(formula = f1 ~ f2 : vowel, data = tidy_spanish_vowels) # linear interaction of F2 and vowel on F1
 summary(model_spanish_vowels)
 ```
 
@@ -65,7 +65,7 @@ summary(model_spanish_vowels)
 ```{r}
 tidy_spanish_vowels |>
   ggplot() + 
-  aes(x =f2, y = f1, color = vowel) + # mapping the x and y axis
+  aes(x =f2, y = f1, color = vowel) + # mapping the x and y axis , each vowel unique color
   geom_point() + # adding the geometric object
   geom_smooth(method = "lm") + # adding the regression line
   labs(title = "F1 as a Function of F2 by vowel")
