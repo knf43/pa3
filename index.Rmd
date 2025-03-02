@@ -1,0 +1,76 @@
+---
+title: "pa3"
+author: "Kaylee Fernandez"
+date: "2025-02-28"
+output: html_document
+---
+
+# load packages
+
+```{r}
+library("tidyverse")
+library("untidydata")
+library("ggplot2")
+
+data(package = "untidydata") 
+data(spanish_vowels, package = "untidydata") 
+```
+
+# explore
+
+```{r}
+str(spanish_vowels)
+summary(spanish_vowels)
+glimpse(spanish_vowels)
+
+```
+
+# tidying the data
+
+```{r}
+tidy_spanish_vowels <- spanish_vowels |>
+  separate(
+    col = label,
+    into = c("ID", "gender", "vowel"),
+    sep = "-" 
+  )
+
+print(tidy_spanish_vowels)
+```
+
+# descriptive statistics
+
+```{r}
+
+tidy_spanish_vowels |>
+  group_by(gender, vowel) |> #grouping by participant type and item
+  summarize(
+    avg_f1 = mean(f1),
+    avg_f2 = mean(f2),
+    sd_f1 = sd(f1),
+    sd_f2 = sd(f2), 
+    ) |>
+  print(n = Inf)
+```
+
+# linear model
+
+```{r}
+model_spanish_vowels <- lm(formula = f1 ~ f2 : vowel, data = tidy_spanish_vowels)
+summary(model_spanish_vowels)
+```
+
+# plot including regression line
+
+```{r}
+tidy_spanish_vowels |>
+  ggplot() + 
+  aes(x =f2, y = f1, color = vowel) + # mapping the x and y axis
+  geom_point() + # adding the geometric object
+  geom_smooth(method = "lm") + # adding the regression line
+  labs(title = "F1 as a Function of F2 by vowel")
+```
+
+## general observations
+
+The dataset includes 25 male and 25 female Spanish speakers, each producing the vowels /a, e, i, o, u/ three times. F1 and F2 measurements were recorded for each vowel. On average, females had higher F1 and F2 values than males. A linear model was fitted to examine the interaction between F2 and vowel (predictors) on F1 (dependent variable). The results revealed significant interactions between F2 and each vowel on F1 (p < .001). The regression plot shows distinct vowel clusters with positive slopes, indicating that for each vowel, higher F2 values are associated with higher F1 values.
